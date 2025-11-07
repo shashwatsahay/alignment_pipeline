@@ -1,13 +1,12 @@
-# UMI Based Sequencing Alignment Pipeline
+# Sequencing Alignment Pipeline
+TODO:
 
+Please dont follow this readme for now
 Authour: Shashwat Sahay(shashwat.sahay@charite.de)
 
-This pipeline was developed under supervision of Dr. Naveed Ishaque (naveed.ishaque@charite.de) and Prof. Roland Eils (roland.eils@charite.de).
-
-The pipeline was tested and supported by Daniel Steiert.
 
 
-The pipeline is made for aligning UMI based WGS/WES and Panel Seq data and to compute the QC metrics associated with it.
+The pipeline is made for aligning WGS/WES and Panel Seq data and to compute the QC metrics associated with it.
 
 We require the sequencing is performed in paired end mode
 
@@ -20,14 +19,14 @@ Please follow this guide on how to install [mamba](https://mamba.readthedocs.io/
 Clone this repository with command
 
 ```
-git clone https://github.com/HiDiHlabs/umi_alignment.git
+git clone https://github.com/shashwatsahay/alignment_pipeline.git
 ```
 
 And change to directory
 
 ```
 
-cd umi_alignment
+cd alignment_pipeline
 ```
 
 
