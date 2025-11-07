@@ -1,12 +1,12 @@
 rule baseRecalibrator:
     input:
-        bam=wrkdir / "alignments" / "{sample}.cons.filtered.realigned.bam",
+        bam=wrkdir / "alignments" / "{sample}_dedup.bam",
         dbsnp=dbsnp,
         genome=genome,
     output:
         table=wrkdir / "metrics" / "{sample}_recal_data.table",
-        bam=temp(wrkdir / "alignments" / "{sample}_dedup.recall.bam"),
-        bai=temp(wrkdir / "alignments" / "{sample}_dedup.recall.bai"),
+        bam=wrkdir / "alignments" / "{sample}_dedup.recall.cram",
+        bai=wrkdir / "alignments" / "{sample}_dedup.recall.cram.crai",
         analyse_covariates=wrkdir / "metrics" / "{sample}_covariates.pdf",
     conda:
         "../envs/gatk.yaml"
@@ -28,31 +28,9 @@ rule baseRecalibrator:
         " gatk ApplyBQSR -I {input.bam} -R {genome} --bqsr-recal-file {output.table} -O {output.bam} && "
         " gatk AnalyzeCovariates "
         " -bqsr {output.table} "
-        " -plots {output.analyse_covariates} "
+        " -plots {output.analyse_covariates} && "
+        " samtools index {output.bam}"
         " ) &> {log} "
-
-
-rule sort_index:
-    input:
-        bam=wrkdir / "alignments" / "{sample}_dedup.recall.bam",
-    output:
-        bam=wrkdir / "alignments" / "{sample}_dedup.recall.sorted.bam",
-        bai=wrkdir / "alignments" / "{sample}_dedup.recall.sorted.bam.bai",
-    conda:
-        "../envs/samtools.yaml"
-    threads: 8
-    params:
-        mem_thread=8000,
-    resources:
-        mem_mb=8 * 8000,
-        runtime=24 * 60,
-        nodes=1,
-        tmpdir=scratch_dir,
-    log:
-        logdir / "samtools/{sample}_sort.log",
-    message:
-        "Sorting and indexing recalibrated bam file"
-    shell:
-        " ( "
-        " samtools sort --threads 8 -m{params.mem_thread}m -o {output.bam}##idx##{output.bai} {input.bam} -T {resources.tmpdir} --write-index"
-        " ) &> {log} "
+        # Please refer to issue https://github.com/broadinstitute/gatk/issues/5299 with regards to mv command
+        # in-short gatk can't create a crai extension and only support bai
+        # further note samtools index command has to be used to because renaming bai to crai doesnt work for mosdepth

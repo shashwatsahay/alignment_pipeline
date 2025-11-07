@@ -1,10 +1,10 @@
 rule flagstatt:
     input:
-        bam=wrkdir / "alignments" / "{sample}_{ext}.bam",
+        bam=wrkdir / "alignments" / "{sample}_{ext}.cram",
     output:
         wrkdir / "metrics" / "{sample}_{ext}.flagstat",
     conda:
-        "../envs/sambamba.yaml"
+        "../envs/samtools.yaml"
     threads: 1
     resources:
         mem_mb=8000,
@@ -16,4 +16,4 @@ rule flagstatt:
     message:
         "Running Flagstat"
     shell:
-        "(sambamba flagstat {input.bam} > {output}) &> {log}"
+        "(samtools flagstat {input.bam} > {output}) &> {log}"

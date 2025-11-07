@@ -4,9 +4,12 @@ if seq_type in ["Panel", "WES"]:
 
     rule mosdepth:
         input:
-            bam=wrkdir / "alignments" / "{sample}_dedup.recall.sorted.bam",
+            bam=wrkdir / "alignments" / "{sample}_dedup.recall.cram",
+            bai=wrkdir / "alignments" / "{sample}_dedup.recall.cram.crai",
             target_regions=target_regions,
+            genome=genome,
         params:
+            temp_idx=str(wrkdir / "alignments" / "{sample}_dedup.recall.crai"),
             prefix=str(wrkdir / "metrics" / "{sample}"),
         output:
             out_1=wrkdir / "metrics" / "{sample}.mosdepth.global.dist.txt",
@@ -24,13 +27,15 @@ if seq_type in ["Panel", "WES"]:
         message:
             "Running mosdepth for WES/panel data"
         shell:
-            "mosdepth --by {input.target_regions} -n {params.prefix} {input.bam} &> {log}"
+            "cp {input.bai} {params.temp_idx} && "
+            "mosdepth -f {input.genome} --by {input.target_regions} -n {params.prefix} {input.bam} &> {log}"
 
 else:
 
     rule mosdepth:
         input:
-            bam=wrkdir / "alignments" / "{sample}_dedup.recall.sorted.bam",
+            bam=wrkdir / "alignments" / "{sample}_dedup.recall.cram",
+            genome=genome,
         params:
             prefix=str(wrkdir / "metrics" / "{sample}"),
         output:

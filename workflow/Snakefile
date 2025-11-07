@@ -10,11 +10,12 @@ container: "docker://condaforge/mambaforge"
 
 
 include: "rules/common.smk"  #done
-include: "rules/create_links.smk"
-include: "rules/umi_based_rules.smk"  #done
+include: "rules/sort_index.smk"  #done
+# include: "rules/create_links.smk"
+# include: "rules/umi_based_rules.smk"  #done
 include: "rules/adapter_trimming.smk"  #done
 include: "rules/alignment.smk"  #done
-#  include: "rules/duplicate_marking.smk"  #done
+include: "rules/duplicate_marking.smk"  #done
 include: "rules/flagstatt.smk"  #done
 include: "rules/metric_hsmetrics.smk"  #done
 include: "rules/metric_insert_size.smk"  #done
@@ -25,64 +26,76 @@ include: "rules/recalibration.smk"  #done
 
 rule all:
     input:
-        # expand(
-        #     wrkdir / "alignments" / "{sample}_merged_umi_annot.bam",
-        #     sample=config["sample"],
-        # ),
         expand(
-            wrkdir / "alignments" / "{sample}_dedup.recall.sorted.bam",
-            sample=config["sample"],
+            wrkdir
+            / "fastq"
+            / "{run_id}"
+            / "cutadapt"
+            / "{sample}_{read}_{lane}_trim_fastqc.html",
+            filtered_product_2,
+            run_id=RUN_ID,
+            sample=config["pid"] + "_" + config["sample"],
+            lane=LANE,
+            read=["R1", "R2"],
         ),
         expand(
-            wrkdir / "alignments" / "{sample}_dedup.recall.sorted.bam.bai",
-            sample=config["sample"],
+            wrkdir
+            / "fastq"
+            / "{run_id}"
+            / "cutadapt"
+            / "{sample}_{read}_{lane}_trim_fastqc.zip",
+            filtered_product_2,
+            run_id=RUN_ID,
+            sample=config["pid"] + "_" + config["sample"],
+            lane=LANE,
+            read=["R1", "R2"],
+        ),
+        expand(
+            wrkdir / "alignments" / "{sample}_dedup.recall.cram",
+            sample=config["pid"] + "_" + config["sample"],
+        ),
+        expand(
+            wrkdir / "alignments" / "{sample}_dedup.recall.cram.crai",
+            sample=config["pid"] + "_" + config["sample"],
         ),
         expand(
             wrkdir / "metrics" / "{sample}.mosdepth.global.dist.txt",
-            sample=config["sample"],
+            sample=config["pid"] + "_" + config["sample"],
         ),
         expand(
             wrkdir / "metrics" / "{sample}_{ext}.flagstat",
-            sample=config["sample"],
-            ext=["dedup.recall.sorted"],
+            sample=config["pid"] + "_" + config["sample"],
+            ext=["dedup.recall"],
         ),
         expand(
             wrkdir / "metrics" / "{sample}_insert_size_metrics.txt",
-            sample=config["sample"],
+            sample=config["pid"] + "_" + config["sample"],
         ),
-        expand(wrkdir / "metrics" / "{sample}_insert_size.pdf", sample=config["sample"]),
+        expand(
+            wrkdir / "metrics" / "{sample}_insert_size.pdf",
+            sample=config["pid"] + "_" + config["sample"],
+        ),
         expand(
             wrkdir / "metrics" / "{sample}.mosdepth.summary.txt",
-            sample=config["sample"],
+            sample=config["pid"] + "_" + config["sample"],
         ),
         expand(
-            wrkdir / "metrics" / "{sample}.grouped-family-sizes.txt",
-            sample=config["sample"],
+            wrkdir / "metrics" / "{sample}_recal_data.table",
+            sample=config["pid"] + "_" + config["sample"],
         ),
         expand(
-            wrkdir / "metrics" / "{sample}_recal_data.table", sample=config["sample"]
+            wrkdir / "metrics" / "{sample}_covariates.pdf",
+            sample=config["pid"] + "_" + config["sample"],
         ),
-        expand(wrkdir / "metrics" / "{sample}_covariates.pdf", sample=config["sample"]),
-        expand(wrkdir / "metrics" / "{sample}_coverage.png", sample=config["sample"])
+        expand(
+            wrkdir / "metrics" / "{sample}_coverage.png",
+            sample=config["pid"] + "_" + config["sample"],
+        )
         if config["SeqType"] not in ["Panel", "WES"]
         else [],
-        expand(wrkdir / "metrics" / "{sample}.hs_metrics.txt", sample=config["sample"])
+        expand(
+            wrkdir / "metrics" / "{sample}.hs_metrics.txt",
+            sample=config["pid"] + "_" + config["sample"],
+        )
         if config["SeqType"] in ["Panel", "WES"]
         else [],
-        expand(
-            wrkdir
-            / "metrics"
-            / "correct_umi"
-            / "{run_id}"
-            / "{sample}_{lane}_umi_metrics.txt",
-            filtered_product,
-            run_id=RUN_ID,
-            sample=config["sample"],
-            lane=LANE,
-        )
-        if correct_umi
-        else [],
-        expand(
-            wrkdir / "metrics" / "{sample}_consensus_metrics.tsv",
-            sample=config["sample"],
-        ),

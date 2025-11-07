@@ -56,7 +56,7 @@ if seq_type in ["Panel", "WES"]:
 
     rule HSmetrics:
         input:
-            bam=wrkdir / "alignments" / "{sample}_dedup.recall.sorted.bam",
+            bam=wrkdir / "alignments" / "{sample}_dedup.recall.cram",
             bait_intervals=wrkdir / "metrics" / "{sample}_flank.interval_list",
             target_intervals=wrkdir / "metrics" / "{sample}_target.interval_list",
             genome=genome,
@@ -68,7 +68,7 @@ if seq_type in ["Panel", "WES"]:
             "../envs/gatk.yaml"
         threads: 1
         resources:
-            mem_mb=8000,
+            mem_mb=20000,
             runtime=24 * 60,
             nodes=1,
             tmpdir=scratch_dir,

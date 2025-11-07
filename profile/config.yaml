@@ -13,5 +13,5 @@ restart-times: 2
 conda-prefix: /dh-projects/ag-ishaque/analysis/sahays/alignment_pipeline/conda_envs
 # conda-prefix: /dh-projects/richter_transformation/analysis/wgs_analysis/alignment_pipeline/conda_envs_ohne_singularity
 singularity-prefix: /dh-projects/ag-ishaque/analysis/sahays/alignment_pipeline/Singularity
-singularity-args: "-B /dh-projects/ag-ishaque:/dh-projects/ag-ishaque,/applications/:/applications,/dh-projects/T-NHL-chapuy:/dh-projects/T-NHL-chapuy,/dh-projects/otp:/dh-projects/otp"
+singularity-args: "-B /dh-projects/:/dh-projects/,/applications/:/applications"
 # /dh-projects/exliquid:/dh-projects/exliquid,

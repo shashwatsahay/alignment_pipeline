@@ -1,7 +1,6 @@
-name: samtools
+name: fastqc
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - samtools=1.18
-  - bwa=0.7.17
+  - fastqc=0.12.1
